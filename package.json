@@ -1,8 +1,8 @@
 {
   "name": "incrementalquintree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An incremental Merkle tree which supports 2 or 5 nodes per leaf.",
-  "main": "build/index.js",
+  "main": "build/IncrementalQuinTree.js",
   "scripts": {
     "test": "jest",
     "watch": "tsc --watch",
