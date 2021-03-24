@@ -1,4 +1,4 @@
-include "../hasherPoseidon.circom";
+include "./hasherPoseidon.circom";
 
 /*template QuinCheckRootWithSha256(levels, subLevels) {*/
     /*// Given a quin Merkle root and a list of leaves, check if the root is the*/

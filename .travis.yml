@@ -1,0 +1,13 @@
+language: node_js
+dist: focal
+node_js:
+  - 12
+
+install:
+  - npm i -g npm
+  - npm i
+  - npm run build
+
+script:
+  - npm run circom-helper-build
+  - npm run circom-helper & sleep 10 && npm run test

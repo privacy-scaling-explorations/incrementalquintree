@@ -7,5 +7,6 @@ The original code is from the [MACI
 project](https://github.com/appliedzkp/maci), but has been placed in its own
 repository and NPM package so other projects can use it.
 
-`circom` circuits for zero-knowledge applications are also included, but their
-tests have yet to be ported from the MACI repository.
+`circom` circuits for zero-knowledge applications are also included.
+
+Solidity contracts are not included (yet).

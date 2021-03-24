@@ -1,6 +1,6 @@
+include "./hasherPoseidon.circom";
 include "../node_modules/circomlib/circuits/mux1.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
-include "./hasherPoseidon.circom";
 include "./calculateTotal.circom";
 include "./checkRoot.circom";
 
