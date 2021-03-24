@@ -3,11 +3,15 @@ dist: focal
 node_js:
   - 12
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libgmp-dev nlohmann-json3-dev nasm g++ build-essential
+
 install:
   - npm i -g npm
   - npm i
   - npm run build
+  - npm run circom-helper-build
 
 script:
-  - npm run circom-helper-build
   - npm run circom-helper & sleep 10 && npm run test
