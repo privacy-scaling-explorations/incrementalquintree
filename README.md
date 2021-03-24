@@ -7,6 +7,9 @@ The original code is from the [MACI
 project](https://github.com/appliedzkp/maci), but has been placed in its own
 repository and NPM package so other projects can use it.
 
-`circom` circuits for zero-knowledge applications are also included.
+`circom` circuits for zero-knowledge applications are also included. Please
+note that it is not possible to import `.circom` files from this module as the
+`circom` compiler does not yet have a way to specify custom import origins,
+like how `solc` has a `--allow-paths` flag.
 
 Solidity contracts are not included (yet).
