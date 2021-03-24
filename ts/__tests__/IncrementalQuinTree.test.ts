@@ -1,9 +1,8 @@
 import * as assert from 'assert'
 const ff = require('ffjavascript')
-const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
 
 import { IncrementalQuinTree } from '../IncrementalQuinTree'
-import { hash5, genRandomSalt } from './utils'
+import { hash5, genRandomSalt, stringifyBigInts } from './utils'
 
 const ZERO_VALUE = BigInt(0)
 const DEPTH = 4
