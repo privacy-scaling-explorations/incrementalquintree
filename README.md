@@ -1,4 +1,4 @@
-# An incremental Merkle tree written in Typescript
+# An incremental Merkle tree written in Typescript and circom
 
 This repository provides a Typescript implementation of an incremental Merkle
 tree which supports either 2 (binary) or 5 (quinary) leaves per node.
