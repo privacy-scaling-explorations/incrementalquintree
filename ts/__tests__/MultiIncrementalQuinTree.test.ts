@@ -1,7 +1,10 @@
 import * as assert from 'assert'
 const ff = require('ffjavascript')
 
-import { IncrementalQuinTree } from '../IncrementalQuinTree'
+import {
+    IncrementalQuinTree,
+    MultiIncrementalQuinTree,
+} from '../IncrementalQuinTree'
 import { hash5, genRandomSalt, stringifyBigInts } from './utils'
 
 const ZERO_VALUE = BigInt(0)
@@ -52,24 +55,25 @@ const computeRootFromLeaves = (
     return computeRootFromLeaves(hashes)
 }
 
-describe('Quin Merkle Tree', () => {
+describe('Multiple Quin Merkle Tree', () => {
 
     it('the constructor should calculate the correct empty root', () => {
-        const tree = new IncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+        const tree = new MultiIncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
         expect(computeEmptyRoot(DEPTH, ZERO_VALUE).toString())
-            .toEqual(tree.root.toString())
+            .toEqual(tree.roots[0].toString())
 
         const leaves: BigInt[] = []
         for (let i = 0; i < LEAVES_PER_NODE ** DEPTH; i ++) {
             leaves.push(ZERO_VALUE)
         }
         expect(computeRootFromLeaves(leaves).toString())
-            .toEqual(tree.root.toString())
+            .toEqual(tree.roots[0].toString())
     })
 
     it('insert() should calculate a correct root', () => {
-        const tree = new IncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
-        const numToInsert = LEAVES_PER_NODE + 2
+        const depth = 2
+        const tree = new MultiIncrementalQuinTree(2, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+        const numToInsert = 4
         const leaves: BigInt[] = []
         for (let i = 0; i < numToInsert; i ++) {
             const leaf = BigInt(i + 1)
@@ -77,18 +81,42 @@ describe('Quin Merkle Tree', () => {
             tree.insert(leaf)
         }
 
-        for (let i = leaves.length; i < LEAVES_PER_NODE ** DEPTH; i ++) {
+        for (let i = leaves.length; i < LEAVES_PER_NODE ** depth; i ++) {
             leaves.push(ZERO_VALUE)
         }
 
         expect(computeRootFromLeaves(leaves).toString())
-            .toEqual(tree.root.toString())
+            .toEqual(tree.roots[0].toString())
 
         expect(tree.leaves.length).toEqual(numToInsert)
     })
 
+    it('insert enough to create 2 trees', () => {
+        const numTrees = 2
+        const depth = 2
+        const tree = new MultiIncrementalQuinTree(2, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+        const numToInsert = numTrees * (LEAVES_PER_NODE ** depth)
+        const leaves: BigInt[] = []
+
+        for (let i = 0; i < numToInsert; i ++) {
+            const leaf = BigInt(i + 1)
+            leaves.push(leaf)
+            tree.insert(leaf)
+        }
+
+        expect(computeRootFromLeaves(leaves.slice(0, numToInsert / 2)).toString())
+            .toEqual(tree.roots[0].toString())
+
+        expect(computeRootFromLeaves(leaves.slice(numToInsert / 2)).toString())
+            .toEqual(tree.roots[1].toString())
+
+        expect(tree.leaves.length).toEqual(numToInsert)
+        expect(tree.roots.length).toEqual(numTrees)
+    })
+
     it('update() should calculate a correct root', () => {
-        const tree = new IncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+        const depth = 2
+        const tree = new MultiIncrementalQuinTree(depth, ZERO_VALUE, LEAVES_PER_NODE, hash5)
         const numToInsert = LEAVES_PER_NODE * 2
         const leaves: BigInt[] = []
         for (let i = 0; i < numToInsert; i ++) {
@@ -97,7 +125,7 @@ describe('Quin Merkle Tree', () => {
             tree.insert(leaf)
         }
 
-        for (let i = leaves.length; i < LEAVES_PER_NODE ** DEPTH; i ++) {
+        for (let i = leaves.length; i < LEAVES_PER_NODE ** depth; i ++) {
             leaves.push(ZERO_VALUE)
         }
 
@@ -105,11 +133,11 @@ describe('Quin Merkle Tree', () => {
         leaves[0] = newLeaf
         tree.update(0, newLeaf)
         expect(computeRootFromLeaves(leaves).toString())
-            .toEqual(tree.root.toString())
+            .toEqual(tree.roots[0].toString())
     })
 
     it('copy() should produce a deep copy', () => {
-        const tree = new IncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+        const tree = new MultiIncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
         const numToInsert = LEAVES_PER_NODE * 2
         for (let i = 0; i < numToInsert; i ++) {
             const leaf = BigInt(i + 1)
@@ -120,11 +148,11 @@ describe('Quin Merkle Tree', () => {
         const leaf = genRandomSalt()
         tree.insert(leaf)
         newTree.insert(leaf)
-        expect(tree.root.toString()).toEqual(newTree.root.toString())
+        expect(tree.roots[0].toString()).toEqual(newTree.roots[0].toString())
 
         tree.update(0, leaf)
         newTree.update(0, leaf)
-        expect(tree.root.toString()).toEqual(newTree.root.toString())
+        expect(tree.roots[0].toString()).toEqual(newTree.roots[0].toString())
 
         const path1 = tree.genMerklePath(2)
         const path2 = newTree.genMerklePath(2)
@@ -134,12 +162,12 @@ describe('Quin Merkle Tree', () => {
     describe('Tree with 4 leaves per node', () => {
         it ('should throw', () => {
             expect(() => {
-                new IncrementalQuinTree(DEPTH, ZERO_VALUE, 4, hash5)
+                new MultiIncrementalQuinTree(DEPTH, ZERO_VALUE, 4, hash5)
             }).toThrow()
         })
         //// TODO: not supported yet
         //it ('should compute the correct root', () => {
-            //const tree = new IncrementalQuinTree(DEPTH, ZERO_VALUE, 4)
+            //const tree = new MultiIncrementalQuinTree(DEPTH, ZERO_VALUE, 4)
             //for (let i = 0; i < 6; i ++) {
                 //tree.insert(i)
             //}
@@ -203,6 +231,25 @@ describe('Quin Merkle Tree', () => {
             expect(isValid).toBeTruthy()
         })
 
+        it('genMerklePath() should calculate a correct Merkle path for the second tree', () => {
+            const depth = 3
+            const numTrees = 2
+            const numToInsert = numTrees * (LEAVES_PER_NODE ** depth)
+            const tree = new IncrementalQuinTree(depth, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+
+            for (let i = 0; i < numToInsert; i ++) {
+                tree.insert(genRandomSalt())
+            }
+
+            const path = tree.genMerklePath((numToInsert / 2) + 1)
+            const isValid = IncrementalQuinTree.verifyMerklePath(
+                path,
+                tree.hashFunc,
+            )
+
+            expect(isValid).toBeTruthy()
+        })
+
         it('genMerklePath() should calculate a correct Merkle path for each most recently inserted leaf', () => {
             const tree = new IncrementalQuinTree(DEPTH, ZERO_VALUE, LEAVES_PER_NODE, hash5)
             const numToInsert = LEAVES_PER_NODE * 2
@@ -249,6 +296,34 @@ describe('Quin Merkle Tree', () => {
                 tree.hashFunc,
             )
             expect(isValid).toBeTruthy()
+        })
+
+        it('ggenMerkleSubrootPath() should calculate a correct Merkle path for the second tree', () => {
+            const depth = 3
+            const numTrees = 2
+            const numToInsert = numTrees * (LEAVES_PER_NODE ** depth)
+            const tree = new IncrementalQuinTree(depth, ZERO_VALUE, LEAVES_PER_NODE, hash5)
+
+            for (let i = 0; i < numToInsert; i ++) {
+                tree.insert(genRandomSalt())
+            }
+
+            const subrootPath = tree.genMerkleSubrootPath(
+                (numToInsert / 2) + LEAVES_PER_NODE,
+                (numToInsert / 2) + (2 * LEAVES_PER_NODE),
+            )
+            const isValid = IncrementalQuinTree.verifyMerklePath(
+                subrootPath,
+                tree.hashFunc,
+            )
+            expect(isValid).toBeTruthy()
+
+            expect(() => {
+                tree.genMerkleSubrootPath(
+                    (numToInsert / 2) - LEAVES_PER_NODE,
+                    (numToInsert / 2) + LEAVES_PER_NODE,
+                )
+            }).toThrow()
         })
 
         it('genMerkleSubrootPath() should calculate a correct Merkle path to a subroot (2)', () => {
