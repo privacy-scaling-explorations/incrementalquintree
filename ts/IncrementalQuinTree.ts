@@ -637,7 +637,7 @@ class MultiIncrementalQuinTree {
 
         if (m === 0) {
             // Zero out the level in filledSubtrees
-            for (let j = 1; j < this.filledSubtrees[0].length; j ++) {
+            for (let j = 1; j < this.leavesPerNode; j ++) {
                 this.filledSubtrees[this.currentTreeNum][0][j] = this.zeros[0]
             }
         }

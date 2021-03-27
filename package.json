@@ -1,6 +1,6 @@
 {
   "name": "incrementalquintree",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "An incremental Merkle tree which supports 2 or 5 nodes per leaf.",
   "main": "build/IncrementalQuinTree.js",
   "scripts": {
