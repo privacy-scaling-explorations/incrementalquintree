@@ -1,6 +1,10 @@
 import axios from 'axios'
 import * as crypto from 'crypto'
 import * as assert from 'assert'
+import {
+    callGenWitness as genWitness,
+    callGetSignalByName as getSignalByName,
+} from 'circom-helper'
 
 const ff = require('ffjavascript')
 const stringifyBigInts: (obj: object) => any = ff.utils.stringifyBigInts
@@ -13,51 +17,10 @@ const hash5 = (inputs: BigInt[]) => {
     return poseidon(inputs)
 }
 
+// Hash up to 2 elements
 const hash2 = (inputs: BigInt[]) => {
     assert(inputs.length === 2)
     return poseidon(inputs)
-}
-
-const OPTS = {
-    headers: {
-        'Content-Type': 'application/json',
-    }
-}
-
-const post = (id: number, method: string, params: any) => {
-    return axios.post(
-        'http://localhost:9001',
-        {
-            jsonrpc: '2.0',
-            id,
-            method,
-            params,
-        },
-        OPTS,
-    )
-}
-
-const genWitness = async (circuit: string, inputs: any) => {
-    const resp = await post(1, 'gen_witness', { circuit, inputs })
-    if (resp.data.error) {
-        throw Error(resp.data.error.message)
-    }
-    return resp.data.result.witness
-}
-
-const getSignalByName = async (
-    circuit: string,
-    witness: any,
-    name: string,
-) => {
-    const resp = await post(1, 'get_signal_index', { circuit, name })
-    return witness[Number(resp.data.result.index)]
-}
-
-const str2BigInt = (s: string): BigInt => {
-    return BigInt(parseInt(
-        Buffer.from(s).toString('hex'), 16
-    ))
 }
 
 // The BN254 group order p
@@ -90,7 +53,6 @@ const genRandomSalt = (): BigInt => {
 
 export {
     genRandomSalt,
-    str2BigInt,
     genWitness,
     getSignalByName,
     hash2,

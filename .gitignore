@@ -1,3 +1,5 @@
+artifacts/
+cache/
 compiled/
 build/
 # Logs
