@@ -84,7 +84,7 @@ contract MultiIncrementalQuinTree is Ownable, Hasher {
 
         for (uint8 i = 0; i < _treeLevels; i++) {
             for (uint8 j = 0; j < LEAVES_PER_NODE; j ++) {
-                filledSubtrees[i][j] = currentZero;
+                //filledSubtrees[i][j] = currentZero;
                 originalFilledSubtrees[i][j] = currentZero;
                 temp[j] = currentZero;
             }
