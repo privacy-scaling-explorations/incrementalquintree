@@ -687,7 +687,7 @@ class MultiIncrementalQuinTree {
 
         const s = treeNum * capacity
 
-        for (let i = s; i < capacity; i ++) {
+        for (let i = s; i < s + capacity; i ++) {
             if (i >= this.leaves.length) {
                 break
             }
