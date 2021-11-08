@@ -674,7 +674,7 @@ class MultiIncrementalQuinTree {
         _value = BigInt(_value)
 
         const capacity = this.leavesPerNode ** this.depth
-        const treeNum = _absoluteIndex % capacity
+        const treeNum = Math.floor(_absoluteIndex / capacity)
 
         const subTree = new IncrementalQuinTree(
             this.depth,
